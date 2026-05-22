@@ -1,19 +1,19 @@
 import { cn } from "@/lib/utils";
 
 const tones = {
-  pending: "bg-amber-50 text-amber-700 border-amber-100",
-  approved: "bg-blue-50 text-blue-700 border-blue-100",
-  activated: "bg-green-50 text-green-700 border-green-100",
-  rejected: "bg-red-50 text-red-700 border-red-100",
-  available: "bg-green-50 text-green-700 border-green-100",
-  neutral: "bg-neutral-100 text-neutral-600 border-neutral-200"
+  pending: "bg-amber-50 text-amber-700 ring-amber-200",
+  approved: "bg-blue-50 text-blue-700 ring-blue-200",
+  activated: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  rejected: "bg-red-50 text-red-700 ring-red-200",
+  available: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  neutral: "bg-slate-100 text-slate-600 ring-slate-200"
 };
 
 export function Badge({ className, tone = "neutral", children }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest",
+        "inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ring-inset",
         tones[tone] || tones.neutral,
         className
       )}

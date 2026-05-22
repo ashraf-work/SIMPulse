@@ -6,7 +6,6 @@ import { loginAdmin } from "@/services/authService";
 export async function POST(request) {
   try {
     const body = await request.json();
-    console.log({body});
     const parsed = loginSchema.safeParse(body);
 
     if (!parsed.success) return errorResponse("Invalid login payload", 422, parsed.error.issues);
@@ -21,8 +20,7 @@ export async function POST(request) {
     const response = successResponse({ admin: result.admin }, "Logged in successfully");
     response.cookies.set(SESSION_COOKIE, result.token, cookieOptions());
     return response;
-  } catch (error) {
-    console.error("Login failed", error);
+  } catch {
     return errorResponse("Unable to login", 500);
   }
 }

@@ -1,15 +1,25 @@
 import { connectDB } from "@/lib/db";
-import { normalizeMongo } from "@/lib/utils";
 import Setting from "@/models/Setting";
+
+function formatSettings(setting) {
+  return {
+    _id: String(setting._id),
+    businessName: setting.businessName,
+    supportEmail: setting.supportEmail,
+    autoActivation: setting.autoActivation,
+    maintenanceMode: setting.maintenanceMode,
+    updatedAt: setting.updatedAt
+  };
+}
 
 export async function getSettings() {
   await connectDB();
-  const setting = await Setting.findOneAndUpdate(
-    { singleton: "global" },
-    { $setOnInsert: { singleton: "global" } },
-    { upsert: true, new: true }
-  );
-  return normalizeMongo(setting);
+  let setting = await Setting.findOne({ singleton: "global" })
+    .select("businessName supportEmail autoActivation maintenanceMode updatedAt");
+  if (!setting) {
+    setting = await Setting.create({ singleton: "global" });
+  }
+  return formatSettings(setting);
 }
 
 export async function updateSettings(payload) {
@@ -17,7 +27,7 @@ export async function updateSettings(payload) {
   const setting = await Setting.findOneAndUpdate(
     { singleton: "global" },
     payload,
-    { upsert: true, new: true, setDefaultsOnInsert: true }
-  );
-  return normalizeMongo(setting);
+    { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
+  ).select("businessName supportEmail autoActivation maintenanceMode updatedAt");
+  return formatSettings(setting);
 }

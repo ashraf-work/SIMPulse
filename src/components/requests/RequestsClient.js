@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Eye, Inbox, PlayCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { DataTable } from "@/components/common/DataTable";
+import { EmptyState, ErrorState, LoadingSkeleton } from "@/components/common/StateViews";
 import { PageHeader } from "@/components/common/PageHeader";
-import { EmptyState, ErrorState, LoadingState } from "@/components/common/StateViews";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog } from "@/components/ui/dialog";
-import { Table, Td, Th } from "@/components/ui/table";
 import { apiRequest } from "@/lib/apiClient";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +35,7 @@ export function RequestsClient() {
       setLoading(false);
     }
   }, [query]);
+
   useEffect(() => { load(); }, [load]);
 
   async function transition(id, action) {
@@ -48,54 +49,68 @@ export function RequestsClient() {
     }
   }
 
+  const columns = [
+    { key: "customerName", header: "Customer", render: (row) => <div><p className="font-semibold text-slate-950">{row.customerName}</p><p className="text-xs text-slate-500">{row.email}</p></div> },
+    { key: "simNumber", header: "SIM" },
+    { key: "provider", header: "Provider" },
+    { key: "requestId", header: "Request ID", cellClassName: "font-mono text-xs" },
+    { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> },
+    { key: "actions", header: "", cellClassName: "text-right", render: (row) => <Button variant="outline" size="sm" onClick={() => setSelected(row)}><Eye className="h-4 w-4" /> View</Button> }
+  ];
+
   return (
-    <>
-      <PageHeader icon={Inbox} title="Activation Requests" description="Review customer requests and control approval, activation and rejection workflow." />
-      <div className="mb-6 flex flex-wrap gap-2">
+    <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <PageHeader icon={Inbox} title="Activation Requests" description="Review requests and manage approval, activation and rejection workflow." />
+
+      <Card className="mb-5 inline-flex flex-wrap gap-1 p-1">
         {filters.map((item) => (
-          <button key={item} onClick={() => setStatus(item)} className={cn("rounded-2xl px-4 py-2 text-xs font-black uppercase tracking-widest transition", status === item ? "bg-red-500 text-white shadow-lg shadow-red-500/15" : "bg-white text-neutral-500 hover:bg-neutral-100")}>
+          <button
+            key={item}
+            onClick={() => setStatus(item)}
+            className={cn(
+              "rounded-lg px-3.5 py-2 text-sm font-medium capitalize transition-all duration-200",
+              status === item ? "bg-red-500 text-white shadow-sm shadow-red-500/20" : "text-slate-600 hover:bg-slate-100 hover:text-slate-950"
+            )}
+          >
             {item}
           </button>
         ))}
-      </div>
-      {error ? <ErrorState message={error} /> : loading ? <LoadingState /> : items.length === 0 ? <EmptyState title="No requests found" description="Requests matching this status will appear here." /> : (
-        <Card className="overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <thead className="bg-neutral-50"><tr><Th>Customer</Th><Th>SIM</Th><Th>Provider</Th><Th>Request ID</Th><Th>Status</Th><Th /></tr></thead>
-              <tbody className="divide-y divide-neutral-100">
-                {items.map((item) => (
-                  <tr key={item.id}>
-                    <Td><p className="font-black text-neutral-900">{item.customerName}</p><p className="text-xs text-neutral-400">{item.email}</p></Td>
-                    <Td>{item.simNumber}</Td>
-                    <Td>{item.provider}</Td>
-                    <Td className="font-mono text-xs">{item.requestId}</Td>
-                    <Td><Badge tone={item.status}>{item.status}</Badge></Td>
-                    <Td className="text-right"><Button variant="outline" size="sm" onClick={() => setSelected(item)}><Eye className="h-4 w-4" /> View</Button></Td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </Card>
+      </Card>
+
+      {error ? <ErrorState message={error} /> : loading ? <LoadingSkeleton rows={6} /> : items.length === 0 ? <EmptyState title="No requests found" description="Requests matching this status will appear here." /> : (
+        <DataTable rows={items} columns={columns} getRowKey={(row) => row._id} />
       )}
-      <Dialog open={Boolean(selected)} onOpenChange={() => setSelected(null)} title="Request Details">
+
+      <Dialog open={Boolean(selected)} onOpenChange={() => setSelected(null)} title="Request Details" description="Customer and SIM activation information.">
         {selected ? (
-          <div className="space-y-4">
-            {["customerName", "email", "phone", "simNumber", "provider", "requestId"].map((key) => (
-              <div key={key} className="rounded-2xl bg-neutral-50 p-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">{key}</p>
-                <p className="mt-1 font-black text-neutral-900">{selected[key]}</p>
-              </div>
-            ))}
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button variant="outline" onClick={() => transition(selected.id, "approve")}><CheckCircle2 className="h-4 w-4" /> Approve</Button>
-              <Button onClick={() => transition(selected.id, "activate")}><PlayCircle className="h-4 w-4" /> Activate</Button>
-              <Button variant="danger" onClick={() => transition(selected.id, "reject")}><XCircle className="h-4 w-4" /> Reject</Button>
+          <div className="space-y-5">
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                ["Customer", selected.customerName],
+                ["Email", selected.email],
+                ["Phone", selected.phone],
+                ["SIM Number", selected.simNumber],
+                ["Provider", selected.provider],
+                ["Request ID", selected.requestId]
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
+              <span className="text-sm font-medium text-slate-600">Current status</span>
+              <StatusBadge status={selected.status} />
+            </div>
+            <div className="flex flex-wrap justify-end gap-2 pt-1">
+              <Button variant="outline" onClick={() => transition(selected._id, "approve")}><CheckCircle2 className="h-4 w-4" /> Approve</Button>
+              <Button onClick={() => transition(selected._id, "activate")}><PlayCircle className="h-4 w-4" /> Activate</Button>
+              <Button variant="danger" onClick={() => transition(selected._id, "reject")}><XCircle className="h-4 w-4" /> Reject</Button>
             </div>
           </div>
         ) : null}
       </Dialog>
-    </>
+    </section>
   );
 }

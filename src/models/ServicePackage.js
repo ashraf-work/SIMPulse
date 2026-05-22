@@ -10,5 +10,7 @@ const ServicePackageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+ServicePackageSchema.index({ name: "text", packageId: "text" });
+
 export default mongoose.models.ServicePackage ||
   mongoose.model("ServicePackage", ServicePackageSchema);

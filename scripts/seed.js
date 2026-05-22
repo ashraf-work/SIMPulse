@@ -26,8 +26,13 @@ const Admin = mongoose.models.Admin || mongoose.model("Admin", new mongoose.Sche
 
 const Sim = mongoose.models.Sim || mongoose.model("Sim", new mongoose.Schema({
   simNumber: { type: String, unique: true },
-  networkChannel: String,
-  assignedScheme: String,
+  package: { type: mongoose.Schema.Types.ObjectId, ref: "ServicePackage" },
+  packageSnapshot: {
+    packageId: String,
+    name: String,
+    dataLimit: String,
+    price: Number
+  },
   status: String
 }, { timestamps: true }));
 
@@ -71,17 +76,42 @@ async function seed() {
     { upsert: true, returnDocument: "after" }
   );
 
-  await Sim.bulkWrite([
-    { updateOne: { filter: { simNumber: "SIM-78451290" }, update: { $set: { networkChannel: "T-Mobile", assignedScheme: "Retail 20GB", status: "available" } }, upsert: true } },
-    { updateOne: { filter: { simNumber: "SIM-78451291" }, update: { $set: { networkChannel: "AT&T", assignedScheme: "Business Unlimited", status: "activated" } }, upsert: true } },
-    { updateOne: { filter: { simNumber: "SIM-78451292" }, update: { $set: { networkChannel: "Verizon", assignedScheme: "Starter 5GB", status: "available" } }, upsert: true } }
-  ]);
-
   await ServicePackage.bulkWrite([
     { updateOne: { filter: { packageId: "PKG-20GB" }, update: { $set: { name: "Retail Data 20", dataLimit: "20GB", price: 29.99 } }, upsert: true } },
     { updateOne: { filter: { packageId: "PKG-UNL" }, update: { $set: { name: "Business Unlimited", dataLimit: "Unlimited", price: 59.99 } }, upsert: true } },
     { updateOne: { filter: { packageId: "PKG-5GB" }, update: { $set: { name: "Starter Connect", dataLimit: "5GB", price: 14.99 } }, upsert: true } }
   ]);
+
+  const packages = await ServicePackage.find({ packageId: { $in: ["PKG-20GB", "PKG-UNL", "PKG-5GB"] } });
+  const packageMap = new Map(packages.map((item) => [item.packageId, item]));
+  const simSeeds = [
+    { simNumber: "SIM-78451290", packageId: "PKG-20GB", status: "available" },
+    { simNumber: "SIM-78451291", packageId: "PKG-UNL", status: "activated" },
+    { simNumber: "SIM-78451292", packageId: "PKG-5GB", status: "available" }
+  ];
+
+  await Sim.bulkWrite(simSeeds.map((sim) => {
+    const pkg = packageMap.get(sim.packageId);
+    return {
+      updateOne: {
+        filter: { simNumber: sim.simNumber },
+        update: {
+          $set: {
+            package: pkg._id,
+            packageSnapshot: {
+              packageId: pkg.packageId,
+              name: pkg.name,
+              dataLimit: pkg.dataLimit,
+              price: pkg.price
+            },
+            status: sim.status
+          },
+          $unset: { networkChannel: "", assignedScheme: "" }
+        },
+        upsert: true
+      }
+    };
+  }));
 
   await ActivationRequest.bulkWrite([
     { updateOne: { filter: { requestId: "REQ-10021" }, update: { $set: { customerName: "Ali Khan", email: "ali@example.com", phone: "+923001111111", simNumber: "SIM-78451290", provider: "T-Mobile", status: "pending" } }, upsert: true } },

@@ -1,5 +1,4 @@
 import { connectDB } from "@/lib/db";
-import { normalizeMongo } from "@/lib/utils";
 import ActivationRequest from "@/models/ActivationRequest";
 import ServicePackage from "@/models/ServicePackage";
 import Sim from "@/models/Sim";
@@ -13,7 +12,11 @@ export async function getDashboardStats() {
       ActivationRequest.countDocuments({ status: "pending" }),
       ActivationRequest.countDocuments(),
       ServicePackage.countDocuments(),
-      ActivationRequest.find().sort({ createdAt: -1 }).limit(6)
+      ActivationRequest.find()
+        .select("customerName email simNumber provider requestId status createdAt")
+        .sort({ createdAt: -1 })
+        .limit(6)
+        .lean()
     ]);
 
   return {
@@ -24,7 +27,16 @@ export async function getDashboardStats() {
       totalRequests,
       totalPackages
     },
-    recentRequests: recentRequests.map(normalizeMongo),
+    recentRequests: recentRequests.map((item) => ({
+      _id: String(item._id),
+      customerName: item.customerName,
+      email: item.email,
+      simNumber: item.simNumber,
+      provider: item.provider,
+      requestId: item.requestId,
+      status: item.status,
+      createdAt: item.createdAt
+    })),
     infrastructure: [
       { label: "Activation API", status: "Operational", latency: "24ms" },
       { label: "SIM Registry", status: "Synced", latency: `${totalSims} records` },

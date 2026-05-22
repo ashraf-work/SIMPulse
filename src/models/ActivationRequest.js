@@ -17,5 +17,7 @@ const ActivationRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+ActivationRequestSchema.index({ status: 1, createdAt: -1 });
+
 export default mongoose.models.ActivationRequest ||
   mongoose.model("ActivationRequest", ActivationRequestSchema);

@@ -14,6 +14,6 @@ export async function POST(request) {
     if (!parsed.success) return errorResponse("Invalid package payload", 422, parsed.error.issues);
     return successResponse(await createPackage(parsed.data), "Package created");
   } catch (error) {
-    return errorResponse(error.code === 11000 ? "Package ID already exists" : "Unable to create package", 400);
+    return errorResponse(error.code === 11000 ? "Package ID already exists" : "Unable to create package", error.code === 11000 ? 409 : 400);
   }
 }

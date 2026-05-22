@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, Box, Clock, Database, RadioTower, Server } from "lucide-react";
+import { Activity, Clock, Database, RadioTower, Server } from "lucide-react";
 import { apiRequest } from "@/lib/apiClient";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { LoadingState, ErrorState } from "@/components/common/StateViews";
+import { DataTable } from "@/components/common/DataTable";
+import { ErrorState, LoadingSkeleton } from "@/components/common/StateViews";
 import { PageHeader } from "@/components/common/PageHeader";
+import { StatusBadge } from "@/components/common/StatusBadge";
 
 export function DashboardClient() {
   const [data, setData] = useState(null);
@@ -17,62 +18,64 @@ export function DashboardClient() {
   }, []);
 
   if (error) return <ErrorState message={error} />;
-  if (!data) return <LoadingState label="Syncing operations" />;
+  if (!data) return <LoadingSkeleton rows={7} />;
 
   const cards = [
     { label: "Total SIM Inventory", value: data.stats.totalSims, icon: Database },
-    { label: "Activated SIM Count", value: data.stats.activatedSims, icon: RadioTower },
+    { label: "Activated SIMs", value: data.stats.activatedSims, icon: RadioTower },
     { label: "Pending Requests", value: data.stats.pendingRequests, icon: Clock },
     { label: "Network Traffic", value: data.stats.totalRequests, icon: Activity }
   ];
 
   return (
-    <>
+    <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
       <PageHeader icon={Server} title="Operations Dashboard" description="Live SIM activation infrastructure and request overview." />
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
-          <Card key={card.label} className="p-6">
-            <div className="mb-5 flex items-center justify-between">
-              <div className="rounded-2xl bg-red-500/10 p-3 text-red-500">
+          <Card key={card.label} className="group p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg hover:shadow-slate-200/70">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-lg bg-red-50 p-2.5 text-red-500 transition duration-200 group-hover:bg-red-500 group-hover:text-white">
                 <card.icon className="h-5 w-5" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-neutral-300">Live</span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Live</span>
             </div>
-            <p className="text-3xl font-black text-neutral-900">{card.value}</p>
-            <p className="mt-1 text-xs font-bold uppercase tracking-widest text-neutral-400">{card.label}</p>
+            <p className="text-2xl font-semibold text-slate-950">{card.value}</p>
+            <p className="mt-1 text-sm text-slate-500">{card.label}</p>
           </Card>
         ))}
       </div>
-      <div className="mt-8 grid gap-6 lg:grid-cols-3">
-        <Card className="p-6 lg:col-span-2">
-          <h2 className="mb-5 text-lg font-black text-neutral-900">Recent Activation Requests</h2>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-3">
+        <div className="xl:col-span-2">
+          <DataTable
+            rows={data.recentRequests}
+            getRowKey={(row) => row._id}
+            columns={[
+              { key: "customerName", header: "Customer", render: (row) => <div><p className="font-semibold text-slate-950">{row.customerName}</p><p className="text-xs text-slate-500">{row.email}</p></div> },
+              { key: "simNumber", header: "SIM" },
+              { key: "provider", header: "Provider" },
+              { key: "requestId", header: "Request ID", cellClassName: "font-mono text-xs" },
+              { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> }
+            ]}
+          />
+        </div>
+
+        <Card className="p-5">
+          <h2 className="mb-4 text-base font-semibold text-slate-950">Service Infrastructure</h2>
           <div className="space-y-3">
-            {data.recentRequests.map((request) => (
-              <div key={request.id} className="flex flex-col gap-3 rounded-2xl bg-neutral-50 p-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="font-black text-neutral-900">{request.customerName}</p>
-                  <p className="text-xs font-semibold text-neutral-500">{request.requestId} - {request.simNumber}</p>
-                </div>
-                <Badge tone={request.status}>{request.status}</Badge>
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card className="p-6">
-          <h2 className="mb-5 text-lg font-black text-neutral-900">Service Infrastructure</h2>
-          <div className="space-y-4">
             {data.infrastructure.map((item) => (
-              <div key={item.label} className="rounded-2xl border border-neutral-100 p-4">
+              <div key={item.label} className="rounded-lg border border-slate-200 p-3 transition hover:border-slate-300 hover:bg-slate-50">
                 <div className="flex items-center justify-between">
-                  <p className="font-black text-neutral-900">{item.label}</p>
-                  <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                  <p className="text-sm font-semibold text-slate-900">{item.label}</p>
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/40" />
                 </div>
-                <p className="mt-1 text-xs font-bold uppercase tracking-widest text-neutral-400">{item.status} - {item.latency}</p>
+                <p className="mt-1 text-xs text-slate-500">{item.status} - {item.latency}</p>
               </div>
             ))}
           </div>
         </Card>
       </div>
-    </>
+    </section>
   );
 }

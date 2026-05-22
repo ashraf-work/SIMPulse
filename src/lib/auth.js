@@ -27,7 +27,7 @@ export async function getCurrentAdmin() {
       _id: payload.adminId,
       "sessions.sessionId": payload.sessionId,
       "sessions.expiresAt": { $gt: new Date() }
-    }).select("-passwordHash");
+    }).select("_id email name role createdAt");
 
     return admin;
   } catch {

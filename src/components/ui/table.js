@@ -7,12 +7,12 @@ export function Table({ className, ...props }) {
 export function Th({ className, ...props }) {
   return (
     <th
-      className={cn("px-5 py-4 text-[10px] font-black uppercase tracking-widest text-neutral-400", className)}
+      className={cn("px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500", className)}
       {...props}
     />
   );
 }
 
 export function Td({ className, ...props }) {
-  return <td className={cn("px-5 py-4 align-middle font-semibold text-neutral-700", className)} {...props} />;
+  return <td className={cn("px-4 py-3 align-middle font-medium text-slate-700", className)} {...props} />;
 }
