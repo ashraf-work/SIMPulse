@@ -52,7 +52,7 @@ export function RequestsClient() {
   const columns = [
     { key: "customerName", header: "Customer", render: (row) => <div><p className="font-semibold text-slate-950">{row.customerName}</p><p className="text-xs text-slate-500">{row.email}</p></div> },
     { key: "simNumber", header: "SIM" },
-    { key: "provider", header: "Provider" },
+    { key: "provider", header: "Source" },
     { key: "requestId", header: "Request ID", cellClassName: "font-mono text-xs" },
     { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> },
     { key: "actions", header: "", cellClassName: "text-right", render: (row) => <Button variant="outline" size="sm" onClick={() => setSelected(row)}><Eye className="h-4 w-4" /> View</Button> }
@@ -90,7 +90,7 @@ export function RequestsClient() {
                 ["Email", selected.email],
                 ["Phone", selected.phone],
                 ["SIM Number", selected.simNumber],
-                ["Provider", selected.provider],
+                ["Source", selected.provider],
                 ["Request ID", selected.requestId]
               ].map(([label, value]) => (
                 <div key={label} className="rounded-lg border border-slate-200 bg-slate-50 p-3">

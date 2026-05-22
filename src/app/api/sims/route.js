@@ -14,6 +14,7 @@ export async function POST(request) {
     if (!parsed.success) return errorResponse("Invalid SIM payload", 422, parsed.error.issues);
     return successResponse(await createSim(parsed.data), "SIM created");
   } catch (error) {
+    if (error.code === 11000) return errorResponse("SIM number already exists.", 409);
     return errorResponse(error.message || "Unable to create SIM", error.statusCode || 400);
   }
 }

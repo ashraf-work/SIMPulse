@@ -49,7 +49,7 @@ export async function createSim({ simNumber, packageId }) {
     ServicePackage.findOne({ packageId }).select("_id packageId name dataLimit price").lean()
   ]);
   if (duplicate) {
-    const error = new Error("SIM number already exists");
+    const error = new Error("SIM number already exists.");
     error.statusCode = 409;
     throw error;
   }

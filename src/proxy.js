@@ -13,7 +13,9 @@ export async function proxy(request) {
   if (pathname.startsWith("/admin/login")) return response;
 
   const protectsAdminPage = pathname.startsWith("/admin");
-  const protectsApi = pathname.startsWith("/api") && !pathname.startsWith("/api/auth/login");
+  const protectsApi = pathname.startsWith("/api") &&
+    !pathname.startsWith("/api/auth/login") &&
+    !pathname.startsWith("/api/public");
 
   if (!protectsAdminPage && !protectsApi) return response;
 

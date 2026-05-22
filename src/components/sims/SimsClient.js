@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileUp, Plus, RadioTower, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
+import { CustomSelect } from "@/components/common/CustomSelect";
 import { DataTable } from "@/components/common/DataTable";
 import {
   EmptyState,
@@ -173,13 +174,26 @@ export function SimsClient() {
       ),
     },
   ];
+  const packageOptions = [
+    { value: "", label: "All packages" },
+    ...packages.map((pkg) => ({ value: pkg.packageId, label: pkg.name })),
+  ];
+  const statusOptions = [
+    { value: "all", label: "All status" },
+    { value: "available", label: "Available" },
+    { value: "activated", label: "Activated" },
+  ];
+  const formPackageOptions = packages.map((pkg) => ({
+    value: pkg.packageId,
+    label: `${pkg.name} - $${Number(pkg.price).toFixed(2)}`,
+  }));
 
   return (
     <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
       <PageHeader
         icon={RadioTower}
         title="SIM Inventory"
-        description="Manage SIM registry with package-backed provisioning."
+        description="Manage SIM registry with package backed provisioning."
         action={
           <div className="flex items-center gap-6">
             <label className=" inline-flex cursor-pointer items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500 transition hover:text-red-500">
@@ -210,29 +224,16 @@ export function SimsClient() {
               onChange={(e) => setFilters({ ...filters, q: e.target.value })}
             />
           </div>
-          <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+          <CustomSelect
             value={filters.packageId}
-            onChange={(e) =>
-              setFilters({ ...filters, packageId: e.target.value })
-            }
-          >
-            <option value="">All packages</option>
-            {packages.map((pkg) => (
-              <option key={pkg.packageId} value={pkg.packageId}>
-                {pkg.name}
-              </option>
-            ))}
-          </select>
-          <select
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+            onChange={(value) => setFilters({ ...filters, packageId: value })}
+            options={packageOptions}
+          />
+          <CustomSelect
             value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-          >
-            <option value="all">All status</option>
-            <option value="available">Available</option>
-            <option value="activated">Activated</option>
-          </select>
+            onChange={(value) => setFilters({ ...filters, status: value })}
+            options={statusOptions}
+          />
         </div>
       </Card>
 
@@ -268,18 +269,13 @@ export function SimsClient() {
             />
           </FormField>
           <FormField label="Service package" error={formErrors.packageId}>
-            <select
-              className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+            <CustomSelect
               value={form.packageId}
-              onChange={(e) => setForm({ ...form, packageId: e.target.value })}
-            >
-              <option value="">Select package</option>
-              {packages.map((pkg) => (
-                <option key={pkg.packageId} value={pkg.packageId}>
-                  {pkg.name} - ${Number(pkg.price).toFixed(2)}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => setForm({ ...form, packageId: value })}
+              options={formPackageOptions}
+              placeholder="Select package"
+              error={Boolean(formErrors.packageId)}
+            />
           </FormField>
           <div className="flex justify-end gap-2 pt-2">
             <Button

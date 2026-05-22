@@ -80,14 +80,14 @@ export function SettingsClient() {
         </div>
       </form>
 
-      <Card className="mt-6 border-slate-800 bg-slate-950 p-5 text-white">
+      {/* <Card className="mt-6 border-slate-800 bg-slate-950 p-5 text-white">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">Security Infrastructure</h3>
         <div className="space-y-3 font-mono text-xs text-slate-400">
           <p className="flex justify-between gap-4"><span>Storage Engine</span><span className="text-red-400">MongoDB + Mongoose</span></p>
           <p className="flex justify-between gap-4"><span>Identity Provider</span><span className="text-red-400">JWT Session Cookie</span></p>
           <p className="flex justify-between gap-4"><span>Last Handshake</span><span>{new Date().toISOString()}</span></p>
         </div>
-      </Card>
+      </Card> */}
     </section>
   );
 }
