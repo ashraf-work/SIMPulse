@@ -189,7 +189,7 @@ export function SimsClient() {
   }));
 
   return (
-    <section className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <section className="animate-in fade-in slide-in-from-bottom-2 duration-300 w-full">
       <PageHeader
         icon={RadioTower}
         title="SIM Inventory"
