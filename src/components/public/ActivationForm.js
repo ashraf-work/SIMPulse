@@ -16,6 +16,7 @@ export function ActivationForm({ initialSimNumber }) {
     customerName: "",
     email: "",
     phone: "",
+    address: "",
     simNumber: initialSimNumber || "",
     source: ""
   });
@@ -28,6 +29,7 @@ export function ActivationForm({ initialSimNumber }) {
     if (form.customerName.trim().length < 2) nextErrors.customerName = "Name is required.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) nextErrors.email = "Enter a valid email.";
     if (form.phone.trim().length < 7) nextErrors.phone = "Phone number is required.";
+    if (form.address.trim().length < 5) nextErrors.address = "Address is required.";
     if (!/^\d{6,20}$/.test(form.simNumber)) nextErrors.simNumber = "SIM number must be numeric.";
     if (!form.source) nextErrors.source = "Select an activation source.";
     setErrors(nextErrors);
@@ -66,6 +68,9 @@ export function ActivationForm({ initialSimNumber }) {
             <Input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="+1 555 0100" />
           </FormField>
         </div>
+        <FormField label="Address" error={errors.address}>
+          <Input value={form.address} onChange={(event) => setForm({ ...form, address: event.target.value })} placeholder="Street, city, state" />
+        </FormField>
         <div className="grid gap-4 md:grid-cols-2">
           <FormField label="SIM number" error={errors.simNumber}>
             <Input value={form.simNumber} onChange={(event) => setForm({ ...form, simNumber: event.target.value.replace(/\D/g, "") })} />

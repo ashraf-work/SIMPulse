@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export const packageSchema = z.object({
-  packageId: z.string().min(2).max(40),
+  carrierName: z.string().min(2).max(120),
   name: z.string().min(2).max(120),
-  dataLimit: z.string().min(1).max(40),
   price: z.coerce.number().min(0)
 });
 

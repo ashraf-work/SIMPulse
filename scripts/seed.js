@@ -24,7 +24,7 @@ const Admin = mongoose.models.Admin || mongoose.model("Admin", new mongoose.Sche
 ));
 
 const ServicePackage = mongoose.models.ServicePackage || mongoose.model("ServicePackage", new mongoose.Schema(
-  { packageId: { type: String, unique: true }, name: String, dataLimit: String, price: Number },
+  { carrierName: { type: String, unique: true }, name: String, price: Number },
   { timestamps: true }
 ));
 
@@ -32,7 +32,7 @@ const Sim = mongoose.models.Sim || mongoose.model("Sim", new mongoose.Schema(
   {
     simNumber: { type: String, unique: true },
     package: { type: mongoose.Schema.Types.ObjectId, ref: "ServicePackage" },
-    packageSnapshot: { packageId: String, name: String, dataLimit: String, price: Number },
+    packageSnapshot: { carrierName: String, name: String, price: Number },
     status: String,
   },
   { timestamps: true }
@@ -43,8 +43,10 @@ const ActivationRequest = mongoose.models.ActivationRequest || mongoose.model("A
     customerName: String,
     email: String,
     phone: String,
+    address: String,
     simNumber: String,
     provider: String,
+    carrierSnapshot: { carrierName: String, packageName: String, price: Number },
     requestId: { type: String, unique: true },
     status: String,
   },
@@ -65,52 +67,52 @@ const Setting = mongoose.models.Setting || mongoose.model("Setting", new mongoos
 // ─── Seed Data ───────────────────────────────────────────────────────────────
 
 const servicePackages = [
-  { packageId: "PKG-5GB",  name: "Starter Connect",     dataLimit: "5GB",       price: 14.99 },
-  { packageId: "PKG-10GB", name: "Basic Data 10",        dataLimit: "10GB",      price: 19.99 },
-  { packageId: "PKG-15GB", name: "Plus Data 15",         dataLimit: "15GB",      price: 24.99 },
-  { packageId: "PKG-20GB", name: "Retail Data 20",       dataLimit: "20GB",      price: 29.99 },
-  { packageId: "PKG-25GB", name: "Premium Data 25",      dataLimit: "25GB",      price: 39.99 },
-  { packageId: "PKG-50GB", name: "Power Data 50",        dataLimit: "50GB",      price: 49.99 },
-  { packageId: "PKG-UNL",  name: "Business Unlimited",   dataLimit: "Unlimited", price: 59.99 },
+  { carrierName: "T-Mobile", name: "Starter Connect", price: 14.99 },
+  { carrierName: "AT&T", name: "Basic Data 10", price: 19.99 },
+  { carrierName: "Verizon", name: "Plus Data 15", price: 24.99 },
+  { carrierName: "Vodafone", name: "Retail Data 20", price: 29.99 },
+  { carrierName: "O2", name: "Premium Data 25", price: 39.99 },
+  { carrierName: "Orange", name: "Power Data 50", price: 49.99 },
+  { carrierName: "SIMPulse Global", name: "Business Unlimited", price: 59.99 },
 ];
 
-// 35 unique SIMs — each packageId used intentionally, no repeating simNumbers
+// 35 unique SIMs - each carrier is used intentionally, no repeating simNumbers
 const simSeeds = [
-  { simNumber: "89441001", packageId: "PKG-5GB",  status: "available" },
-  { simNumber: "89441002", packageId: "PKG-5GB",  status: "available" },
-  { simNumber: "89441003", packageId: "PKG-5GB",  status: "available" },
-  { simNumber: "89441004", packageId: "PKG-5GB",  status: "available" },
-  { simNumber: "89441005", packageId: "PKG-5GB",  status: "available" },
-  { simNumber: "89441006", packageId: "PKG-10GB", status: "available" },
-  { simNumber: "89441007", packageId: "PKG-10GB", status: "available" },
-  { simNumber: "89441008", packageId: "PKG-10GB", status: "available" },
-  { simNumber: "89441009", packageId: "PKG-10GB", status: "available" },
-  { simNumber: "89441010", packageId: "PKG-10GB", status: "available" },
-  { simNumber: "89441011", packageId: "PKG-15GB", status: "available" },
-  { simNumber: "89441012", packageId: "PKG-15GB", status: "available" },
-  { simNumber: "89441013", packageId: "PKG-15GB", status: "available" },
-  { simNumber: "89441014", packageId: "PKG-15GB", status: "available" },
-  { simNumber: "89441015", packageId: "PKG-15GB", status: "available" },
-  { simNumber: "89441016", packageId: "PKG-20GB", status: "available" },
-  { simNumber: "89441017", packageId: "PKG-20GB", status: "available" },
-  { simNumber: "89441018", packageId: "PKG-20GB", status: "available" },
-  { simNumber: "89441019", packageId: "PKG-20GB", status: "available" },
-  { simNumber: "89441020", packageId: "PKG-20GB", status: "available" },
-  { simNumber: "89441021", packageId: "PKG-25GB", status: "available" },
-  { simNumber: "89441022", packageId: "PKG-25GB", status: "available" },
-  { simNumber: "89441023", packageId: "PKG-25GB", status: "available" },
-  { simNumber: "89441024", packageId: "PKG-25GB", status: "available" },
-  { simNumber: "89441025", packageId: "PKG-25GB", status: "available" },
-  { simNumber: "89441026", packageId: "PKG-50GB", status: "available" },
-  { simNumber: "89441027", packageId: "PKG-50GB", status: "available" },
-  { simNumber: "89441028", packageId: "PKG-50GB", status: "available" },
-  { simNumber: "89441029", packageId: "PKG-50GB", status: "available" },
-  { simNumber: "89441030", packageId: "PKG-50GB", status: "available" },
-  { simNumber: "89441031", packageId: "PKG-UNL",  status: "available" },
-  { simNumber: "89441032", packageId: "PKG-UNL",  status: "available" },
-  { simNumber: "89441033", packageId: "PKG-UNL",  status: "available" },
-  { simNumber: "89441034", packageId: "PKG-UNL",  status: "available" },
-  { simNumber: "89441035", packageId: "PKG-UNL",  status: "available" },
+  { simNumber: "89441001", carrierName: "T-Mobile", status: "available" },
+  { simNumber: "89441002", carrierName: "T-Mobile", status: "available" },
+  { simNumber: "89441003", carrierName: "T-Mobile", status: "available" },
+  { simNumber: "89441004", carrierName: "T-Mobile", status: "available" },
+  { simNumber: "89441005", carrierName: "T-Mobile", status: "available" },
+  { simNumber: "89441006", carrierName: "AT&T", status: "available" },
+  { simNumber: "89441007", carrierName: "AT&T", status: "available" },
+  { simNumber: "89441008", carrierName: "AT&T", status: "available" },
+  { simNumber: "89441009", carrierName: "AT&T", status: "available" },
+  { simNumber: "89441010", carrierName: "AT&T", status: "available" },
+  { simNumber: "89441011", carrierName: "Verizon", status: "available" },
+  { simNumber: "89441012", carrierName: "Verizon", status: "available" },
+  { simNumber: "89441013", carrierName: "Verizon", status: "available" },
+  { simNumber: "89441014", carrierName: "Verizon", status: "available" },
+  { simNumber: "89441015", carrierName: "Verizon", status: "available" },
+  { simNumber: "89441016", carrierName: "Vodafone", status: "available" },
+  { simNumber: "89441017", carrierName: "Vodafone", status: "available" },
+  { simNumber: "89441018", carrierName: "Vodafone", status: "available" },
+  { simNumber: "89441019", carrierName: "Vodafone", status: "available" },
+  { simNumber: "89441020", carrierName: "Vodafone", status: "available" },
+  { simNumber: "89441021", carrierName: "O2", status: "available" },
+  { simNumber: "89441022", carrierName: "O2", status: "available" },
+  { simNumber: "89441023", carrierName: "O2", status: "available" },
+  { simNumber: "89441024", carrierName: "O2", status: "available" },
+  { simNumber: "89441025", carrierName: "O2", status: "available" },
+  { simNumber: "89441026", carrierName: "Orange", status: "available" },
+  { simNumber: "89441027", carrierName: "Orange", status: "available" },
+  { simNumber: "89441028", carrierName: "Orange", status: "available" },
+  { simNumber: "89441029", carrierName: "Orange", status: "available" },
+  { simNumber: "89441030", carrierName: "Orange", status: "available" },
+  { simNumber: "89441031", carrierName: "SIMPulse Global", status: "available" },
+  { simNumber: "89441032", carrierName: "SIMPulse Global", status: "available" },
+  { simNumber: "89441033", carrierName: "SIMPulse Global", status: "available" },
+  { simNumber: "89441034", carrierName: "SIMPulse Global", status: "available" },
+  { simNumber: "89441035", carrierName: "SIMPulse Global", status: "available" },
 ];
 
 // Activation requests — simNumbers must exist in simSeeds above
@@ -121,8 +123,10 @@ const activationRequests = [
     customerName: "Ali Hassan",
     email: "ali.hassan@example.com",
     phone: "+923011111111",
+    address: "12 Main Boulevard, Lahore",
     simNumber: "89441001",
     provider: "T-Mobile",
+    carrierName: "T-Mobile",
     status: "pending",
   },
   {
@@ -130,8 +134,10 @@ const activationRequests = [
     customerName: "Sara Ahmed",
     email: "sara.ahmed@example.com",
     phone: "+923022222222",
+    address: "44 Jinnah Avenue, Islamabad",
     simNumber: "89441006",
     provider: "AT&T",
+    carrierName: "AT&T",
     status: "activated",
   },
   {
@@ -139,8 +145,10 @@ const activationRequests = [
     customerName: "Hamza Noor",
     email: "hamza.noor@example.com",
     phone: "+923033333333",
+    address: "81 Clifton Block 5, Karachi",
     simNumber: "89441011",
     provider: "Verizon",
+    carrierName: "Verizon",
     status: "approved",
   },
   {
@@ -148,8 +156,10 @@ const activationRequests = [
     customerName: "Fatima Malik",
     email: "fatima.malik@example.com",
     phone: "+923044444444",
+    address: "23 Model Town, Lahore",
     simNumber: "89441016",
     provider: "Vodafone",
+    carrierName: "Vodafone",
     status: "pending",
   },
   {
@@ -157,8 +167,10 @@ const activationRequests = [
     customerName: "Usman Tariq",
     email: "usman.tariq@example.com",
     phone: "+923055555555",
+    address: "9 University Road, Peshawar",
     simNumber: "89441021",
     provider: "O2",
+    carrierName: "O2",
     status: "rejected",
   },
   {
@@ -166,8 +178,10 @@ const activationRequests = [
     customerName: "Ayesha Siddiqui",
     email: "ayesha.s@example.com",
     phone: "+923066666666",
+    address: "17 Gulberg Greens, Islamabad",
     simNumber: "89441026",
     provider: "Orange",
+    carrierName: "Orange",
     status: "activated",
   },
   {
@@ -175,8 +189,10 @@ const activationRequests = [
     customerName: "Bilal Raza",
     email: "bilal.raza@example.com",
     phone: "+923077777777",
+    address: "55 DHA Phase 6, Karachi",
     simNumber: "89441031",
     provider: "T-Mobile",
+    carrierName: "SIMPulse Global",
     status: "pending",
   },
 ];
@@ -210,21 +226,20 @@ async function seed() {
   await ServicePackage.insertMany(servicePackages);
   console.log(`✔ ${servicePackages.length} service packages created`);
 
-  // SIMs — resolve packageId → ObjectId
+  // SIMs - resolve carrierName to ObjectId
   const pkgDocs = await ServicePackage.find({});
-  const pkgMap = new Map(pkgDocs.map((p) => [p.packageId, p]));
+  const pkgMap = new Map(pkgDocs.map((p) => [p.carrierName, p]));
 
   const simDocs = simSeeds.map((s) => {
-    const pkg = pkgMap.get(s.packageId);
-    if (!pkg) throw new Error(`Unknown packageId: ${s.packageId}`);
+    const pkg = pkgMap.get(s.carrierName);
+    if (!pkg) throw new Error(`Unknown carrierName: ${s.carrierName}`);
     return {
       simNumber: s.simNumber,
       status: s.status,
       package: pkg._id,
       packageSnapshot: {
-        packageId: pkg.packageId,
+        carrierName: pkg.carrierName,
         name: pkg.name,
-        dataLimit: pkg.dataLimit,
         price: pkg.price,
       },
     };
@@ -234,7 +249,20 @@ async function seed() {
   console.log(`✔ ${simDocs.length} SIMs created`);
 
   // Activation requests
-  await ActivationRequest.insertMany(activationRequests);
+  const requestDocs = activationRequests.map((request) => {
+    const carrier = pkgMap.get(request.carrierName);
+    return {
+      ...request,
+      carrierSnapshot: carrier
+        ? {
+            carrierName: carrier.carrierName,
+            packageName: carrier.name,
+            price: carrier.price,
+          }
+        : undefined,
+    };
+  });
+  await ActivationRequest.insertMany(requestDocs);
   console.log(`✔ ${activationRequests.length} activation requests created`);
 
   // Settings

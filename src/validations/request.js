@@ -4,6 +4,7 @@ export const activationRequestSchema = z.object({
   customerName: z.string().min(2).max(120),
   email: z.string().email(),
   phone: z.string().min(7).max(30),
+  address: z.string().min(5).max(240),
   simNumber: z.string().min(3).max(64),
   provider: z.string().min(2).max(80),
   requestId: z.string().min(3).max(40),

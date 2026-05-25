@@ -112,23 +112,6 @@ function HomeHero() {
             counters, online sellers, and support desks worldwide.
           </p>
 
-          {/* <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[
-              ["99.9%", "Gateway uptime"],
-              ["6 carriers", "Supported networks"],
-              ["6 regions", "Global coverage"],
-              ["Instant", "SIM inventory check"],
-            ].map(([value, label]) => (
-              <div
-                key={label}
-                className="rounded-xl bg-slate-50 border border-slate-200 p-4"
-              >
-                <p className="text-2xl font-semibold text-slate-950">{value}</p>
-                <p className="mt-1 text-xs text-slate-500">{label}</p>
-              </div>
-            ))}
-          </div> */}
-
           <div className="mt-6 flex flex-wrap gap-4 text-sm text-slate-600">
             {[
               "Inventory checked first",
@@ -174,7 +157,8 @@ function HomeHero() {
             <div className="mt-5 pt-4 text-center text-xs text-slate-500">
               Already submitted?{" "}
               <Link href="/status" className="text-red-400 hover:underline">
-                Track by reference ID Or SIM number <ArrowRight className="h-3 w-3 inline-block" />
+                Track by reference ID Or SIM number{" "}
+                <ArrowRight className="h-3 w-3 inline-block" />
               </Link>
             </div>
           </div>
@@ -329,13 +313,11 @@ function TrustedPartners() {
     <section className="px-4 py-16 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 ">
         <div className="text-center">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-red-500">
-            Trusted partners
-          </p>
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
-            Built for carrier retail workflows.
-          </h2>
-          <p className="mt-4 leading-7 text-slate-600">
+          <SectionHeader
+            eyebrow="Trusted partners"
+            title="Built for carrier retail workflows"                                                        
+          />                                                                                    
+          <p className="-mt-8 leading-7 text-slate-600">
             Public activation captures source details so admin teams know where
             the request originated.
           </p>

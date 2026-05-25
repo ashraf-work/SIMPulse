@@ -13,11 +13,12 @@ export async function getDashboardStats() {
       ActivationRequest.countDocuments(),
       ServicePackage.countDocuments(),
       ActivationRequest.find()
-        .select("customerName email simNumber provider requestId status createdAt")
+        .select("customerName email simNumber provider carrierSnapshot.price status createdAt")
         .sort({ createdAt: -1 })
         .limit(6)
         .lean()
     ]);
+    console.log({recentRequests});
 
   return {
     stats: {
@@ -33,7 +34,7 @@ export async function getDashboardStats() {
       email: item.email,
       simNumber: item.simNumber,
       provider: item.provider,
-      requestId: item.requestId,
+      price: item.carrierSnapshot.price,
       status: item.status,
       createdAt: item.createdAt
     })),

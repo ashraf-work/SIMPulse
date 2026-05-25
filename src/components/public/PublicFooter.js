@@ -18,7 +18,7 @@ export function PublicFooter() {
             </p>
           </div>
           <FooterColumn title="Service" links={[["Help Center", "/contact"], ["Services", "/services"], ["Status Tracking", "/status"]]} />
-          <FooterColumn title="Explore" links={[["Activate", "/"], ["About Us", "/about"], ["Admin", "/admin/login"]]} />
+          <FooterColumn title="Explore" links={[["Activate", "/"], ["About Us", "/about"]]} />
         </div>
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-800 pt-6 text-xs text-slate-500 md:flex-row md:items-center md:justify-between">
           <span className="font-semibold uppercase tracking-wider">Secured Activation Network</span>

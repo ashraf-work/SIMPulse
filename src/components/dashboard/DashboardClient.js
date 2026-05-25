@@ -19,7 +19,7 @@ export function DashboardClient() {
 
   if (error) return <ErrorState message={error} />;
   if (!data) return <LoadingSkeleton rows={7} />;
-console.log({data})
+
   const cards = [
     { label: "Total SIM Inventory", value: data.stats.totalSims, icon: Database },
     { label: "Activated SIMs", value: data.stats.activatedSims, icon: RadioTower },
@@ -55,7 +55,7 @@ console.log({data})
               { key: "customerName", header: "Customer", render: (row) => <div><p className="font-semibold text-slate-950">{row.customerName}</p><p className="text-xs text-slate-500">{row.email}</p></div> },
               { key: "simNumber", header: "SIM" },
               { key: "provider", header: "Source" },
-              { key: "requestId", header: "Request ID", cellClassName: "font-mono text-xs" },
+              { key: "price", header: "Price" },
               { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> }
             ]}
           />

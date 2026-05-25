@@ -8,7 +8,6 @@ export async function POST(request) {
     const body = await request.json();
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) return errorResponse("Invalid login payload", 422, parsed.error.issues);
-    console.log({body})
 
     const result = await loginAdmin({
       ...parsed.data,

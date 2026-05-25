@@ -20,14 +20,14 @@ import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { apiRequest } from "@/lib/apiClient";
 
-const initialForm = { simNumber: "", packageId: "" };
+const initialForm = { simNumber: "", carrierId: "" };
 
 export function SimsClient() {
   const [items, setItems] = useState([]);
-  const [packages, setPackages] = useState([]);
+  const [carriers, setCarriers] = useState([]);
   const [filters, setFilters] = useState({
     q: "",
-    packageId: "",
+    carrierId: "",
     status: "all",
   });
   const [loading, setLoading] = useState(true);
@@ -59,23 +59,23 @@ export function SimsClient() {
     [query],
   );
 
-  const loadPackages = useCallback(async function loadPackages() {
+  const loadCarriers = useCallback(async function loadCarriers() {
     const data = await apiRequest("/api/packages?page=1&limit=100");
-    setPackages(data.items);
+    setCarriers(data.items);
   }, []);
 
   useEffect(() => {
     load();
   }, [load]);
   useEffect(() => {
-    loadPackages().catch((err) => toast.error(err.message));
-  }, [loadPackages]);
+    loadCarriers().catch((err) => toast.error(err.message));
+  }, [loadCarriers]);
 
   function validate() {
     const errors = {};
     if (form.simNumber.trim().length < 3)
       errors.simNumber = "SIM number must be at least 3 characters.";
-    if (!form.packageId) errors.packageId = "Select a service package.";
+    if (!form.carrierId) errors.carrierId = "Select a carrier.";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -113,10 +113,10 @@ export function SimsClient() {
     const sims = lines
       .slice(lines[0].toLowerCase().includes("simnumber") ? 1 : 0)
       .map((line) => {
-        const [simNumber, packageId] = line
+        const [simNumber, carrierName] = line
           .split(",")
           .map((value) => value.trim());
-        return { simNumber, packageId };
+        return { simNumber, carrierName };
       });
     try {
       await apiRequest("/api/sims/bulk", {
@@ -139,16 +139,15 @@ export function SimsClient() {
       ),
     },
     {
-      key: "packageName",
-      header: "Package",
+      key: "carrierName",
+      header: "Carrier",
       render: (row) => (
         <div>
-          <p className="font-medium text-slate-900">{row.packageName}</p>
-          <p className="text-xs text-slate-500">{row.packageId}</p>
+          <p className="font-medium text-slate-900">{row.carrierName}</p>
+          <p className="text-xs text-slate-500">{row.packageName}</p>
         </div>
       ),
     },
-    { key: "dataLimit", header: "Data" },
     {
       key: "price",
       header: "Price",
@@ -174,18 +173,18 @@ export function SimsClient() {
       ),
     },
   ];
-  const packageOptions = [
-    { value: "", label: "All packages" },
-    ...packages.map((pkg) => ({ value: pkg.packageId, label: pkg.name })),
+  const carrierOptions = [
+    { value: "", label: "All carriers" },
+    ...carriers.map((carrier) => ({ value: carrier._id, label: carrier.carrierName })),
   ];
   const statusOptions = [
     { value: "all", label: "All status" },
     { value: "available", label: "Available" },
     { value: "activated", label: "Activated" },
   ];
-  const formPackageOptions = packages.map((pkg) => ({
-    value: pkg.packageId,
-    label: `${pkg.name} - $${Number(pkg.price).toFixed(2)}`,
+  const formCarrierOptions = carriers.map((carrier) => ({
+    value: carrier._id,
+    label: `${carrier.carrierName} - ${carrier.name} - $${Number(carrier.price).toFixed(2)}`,
   }));
 
   return (
@@ -193,7 +192,7 @@ export function SimsClient() {
       <PageHeader
         icon={RadioTower}
         title="SIM Inventory"
-        description="Manage SIM registry with package backed provisioning."
+        description="Manage SIM registry with carrier backed provisioning."
         action={
           <div className="flex items-center gap-6">
             <label className=" inline-flex cursor-pointer items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500 transition hover:text-red-500">
@@ -225,9 +224,9 @@ export function SimsClient() {
             />
           </div>
           <CustomSelect
-            value={filters.packageId}
-            onChange={(value) => setFilters({ ...filters, packageId: value })}
-            options={packageOptions}
+            value={filters.carrierId}
+            onChange={(value) => setFilters({ ...filters, carrierId: value })}
+            options={carrierOptions}
           />
           <CustomSelect
             value={filters.status}
@@ -244,7 +243,7 @@ export function SimsClient() {
       ) : items.length === 0 ? (
         <EmptyState
           title="No SIMs found"
-          description="Add a SIM with a package to populate inventory."
+          description="Add a SIM with a carrier to populate inventory."
         />
       ) : (
         <DataTable
@@ -258,7 +257,7 @@ export function SimsClient() {
         open={open}
         onOpenChange={setOpen}
         title="Add SIM"
-        description="Select an existing package. Package details are snapshotted by the backend."
+        description="Select an existing carrier. Carrier details are snapshotted by the backend."
       >
         <form id="sim-form" onSubmit={create} className="space-y-4">
           <FormField label="SIM number" error={formErrors.simNumber}>
@@ -268,13 +267,13 @@ export function SimsClient() {
               onChange={(e) => setForm({ ...form, simNumber: e.target.value })}
             />
           </FormField>
-          <FormField label="Service package" error={formErrors.packageId}>
+          <FormField label="Carrier" error={formErrors.carrierId}>
             <CustomSelect
-              value={form.packageId}
-              onChange={(value) => setForm({ ...form, packageId: value })}
-              options={formPackageOptions}
-              placeholder="Select package"
-              error={Boolean(formErrors.packageId)}
+              value={form.carrierId}
+              onChange={(value) => setForm({ ...form, carrierId: value })}
+              options={formCarrierOptions}
+              placeholder="Select carrier"
+              error={Boolean(formErrors.carrierId)}
             />
           </FormField>
           <div className="flex justify-end gap-2 pt-2">

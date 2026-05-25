@@ -8,6 +8,7 @@ export const publicActivationSchema = z.object({
   customerName: z.string().min(2, "Name is required.").max(120),
   email: z.string().email("Enter a valid email address."),
   phone: z.string().min(7, "Phone number is required.").max(30),
+  address: z.string().min(5, "Address is required.").max(240),
   simNumber: z.string().regex(/^\d{6,20}$/, "SIM number must be a numeric string."),
   source: z.enum(["Direct", "Amazon", "eBay", "Retail Store", "Partner Outlet"], {
     message: "Select an activation source."

@@ -9,8 +9,12 @@ function formatRequest(item) {
     customerName: item.customerName,
     email: item.email,
     phone: item.phone,
+    address: item.address,
     simNumber: item.simNumber,
     provider: item.provider,
+    carrierName: item.carrierSnapshot?.carrierName || "-",
+    packageName: item.carrierSnapshot?.packageName || "-",
+    price: item.carrierSnapshot?.price ?? 0,
     requestId: item.requestId,
     status: item.status,
     createdAt: item.createdAt
@@ -25,7 +29,7 @@ export async function listRequests(query) {
   const filter = query.status && query.status !== "all" ? { status: query.status } : {};
   const [items, totalCount] = await Promise.all([
     ActivationRequest.find(filter)
-      .select("customerName email phone simNumber provider requestId status createdAt")
+      .select("customerName email phone address simNumber provider carrierSnapshot requestId status createdAt")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)

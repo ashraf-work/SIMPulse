@@ -16,7 +16,6 @@ export function DataTable({ columns, rows, getRowKey }) {
           <tbody className="divide-y divide-slate-100">
             {rows.map((row) => (
               <tr key={getRowKey(row)} className="transition-colors duration-150 hover:bg-slate-50/80">
-                {console.log(columns)}
                 {columns.map((column) => (
                   <Td key={column.key} className={column.cellClassName}>
                     {column.render ? column.render(row) : row[column.key]}

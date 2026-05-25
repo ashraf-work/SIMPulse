@@ -5,9 +5,8 @@ import ServicePackage from "@/models/ServicePackage";
 function formatPackage(item) {
   return {
     _id: String(item._id),
-    packageId: item.packageId,
+    carrierName: item.carrierName,
     name: item.name,
-    dataLimit: item.dataLimit,
     price: item.price,
     createdAt: item.createdAt
   };
@@ -19,12 +18,12 @@ export async function listPackages(query) {
   const limit = Number(query.limit);
   const skip = (page - 1) * limit;
   const filter = query.q
-    ? { $or: [{ name: { $regex: query.q, $options: "i" } }, { packageId: { $regex: query.q, $options: "i" } }] }
+    ? { $or: [{ name: { $regex: query.q, $options: "i" } }, { carrierName: { $regex: query.q, $options: "i" } }] }
     : {};
 
   const [items, totalCount] = await Promise.all([
     ServicePackage.find(filter)
-      .select("packageId name dataLimit price createdAt")
+      .select("carrierName name price createdAt")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)

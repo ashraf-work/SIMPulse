@@ -9,7 +9,6 @@ import {
   ChevronRight,
   LogOut,
   Menu,
-  Package,
   RadioTower,
   Settings,
   Shield,
@@ -21,7 +20,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { name: "Dashboard", path: "/admin/dashboard", icon: BarChart3 },
   { name: "SIM Inventory", path: "/admin/sims", icon: RadioTower },
-  { name: "Service Packages", path: "/admin/packages", icon: Package },
+  { name: "Carriers", path: "/admin/packages", icon: RadioTower },
   { name: "Activation Requests", path: "/admin/requests", icon: Box },
   { name: "Settings", path: "/admin/settings", icon: Settings }
 ];

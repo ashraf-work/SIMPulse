@@ -9,6 +9,9 @@ function formatPublicRequest(request) {
     simNumber: request.simNumber,
     status: request.status,
     source: request.provider,
+    carrierName: request.carrierSnapshot?.carrierName,
+    packageName: request.carrierSnapshot?.packageName,
+    price: request.carrierSnapshot?.price,
     createdAt: request.createdAt
   };
 }
@@ -23,7 +26,7 @@ export async function createPublicActivation(payload) {
     { simNumber: payload.simNumber, status: "available" },
     { status: "activated" },
     { returnDocument: "after" }
-  ).select("_id simNumber status");
+  ).select("_id simNumber status packageSnapshot");
 
   if (!sim) {
     const existing = await Sim.findOne({ simNumber: payload.simNumber }).select("status").lean();
@@ -36,8 +39,14 @@ export async function createPublicActivation(payload) {
     customerName: payload.customerName,
     email: payload.email,
     phone: payload.phone,
+    address: payload.address,
     simNumber: payload.simNumber,
     provider: payload.source,
+    carrierSnapshot: {
+      carrierName: sim.packageSnapshot?.carrierName,
+      packageName: sim.packageSnapshot?.name,
+      price: sim.packageSnapshot?.price
+    },
     requestId: generateRequestId(),
     status: "pending"
   });
@@ -68,7 +77,7 @@ export async function findPublicStatus(query) {
       { simNumber: query }
     ]
   })
-    .select("simNumber provider requestId status createdAt")
+    .select("simNumber provider carrierSnapshot requestId status createdAt")
     .sort({ createdAt: -1 })
     .lean();
 
